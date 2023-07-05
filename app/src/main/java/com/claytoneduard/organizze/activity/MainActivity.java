@@ -1,4 +1,4 @@
-package com.claytoneduard.organizze;
+package com.claytoneduard.organizze.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.claytoneduard.organizze.R;
 import com.claytoneduard.organizze.activity.CadastroActivity;
 import com.claytoneduard.organizze.activity.LoginActivity;
 import com.heinrichreimersoftware.materialintro.app.IntroActivity;
