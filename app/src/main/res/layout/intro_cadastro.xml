@@ -52,7 +52,7 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="btCadastrar"
+        android:onClick="btEntrar"
         android:text="Já tenho conta"
         android:textColor="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
