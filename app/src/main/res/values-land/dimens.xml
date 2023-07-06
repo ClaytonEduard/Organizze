@@ -1,0 +1,8 @@
+<!--
+  ~ Copyright (c) 2023.
+  ~ Clayton Eduard F Chaves
+  -->
+
+<resources>
+    <dimen name="fab_margin">48dp</dimen>
+</resources>
