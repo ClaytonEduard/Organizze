@@ -41,14 +41,13 @@
         fab:menu_backgroundColor="@android:color/transparent"
         fab:menu_buttonSpacing="0dp"
         fab:menu_colorNormal="@color/purple_200"
-        fab:menu_colorPressed="@color/purple_300"
-       >
+        fab:menu_colorPressed="@color/purple_300">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/menu_despesa"
-            android:onClick="adicionarDespesa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="adicionarDespesa"
             android:src="@drawable/ic_adicionar_branco__24dp"
             fab:fab_colorNormal="@color/colorPrimaryDespesa"
             fab:fab_label="Despesa"
@@ -56,16 +55,15 @@
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/menu_receita"
-            android:onClick="adicionarReceita"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="adicionarReceita"
             android:src="@drawable/ic_adicionar_branco__24dp"
             fab:fab_colorNormal="@color/colorPrimaryReceita"
             fab:fab_label="Receita"
             fab:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

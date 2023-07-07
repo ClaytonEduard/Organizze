@@ -5,6 +5,7 @@
 
 package com.claytoneduard.organizze.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -53,10 +54,10 @@ public class PrincipalActivity extends AppCompatActivity {
     }
 
     public void adicionarReceita(View view){
-
+        startActivity(new Intent(this, ReceitasActivity.class));
     }
     public void adicionarDespesa(View view){
-
+        startActivity(new Intent(this, DespesasActivity.class));
     }
 
 }
