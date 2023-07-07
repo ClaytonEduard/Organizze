@@ -4,8 +4,13 @@ package com.claytoneduard.organizze.model;
  * Clayton Eduard F Chaves
  */
 
+import com.claytoneduard.organizze.config.ConfiguracaoFIrebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
+
 public class Usuario {
 
+    private String idUsuario;
     private String nome;
     private String email;
     private String senha;
@@ -15,6 +20,22 @@ public class Usuario {
 
     public String getNome() {
         return nome;
+    }
+
+    //metodo salva user
+    public void salvar() {
+        DatabaseReference firebase = ConfiguracaoFIrebase.getFirebaseDatabase();
+        firebase.child("usuarios")
+                .child(this.idUsuario)
+                .setValue(this);// seta os dados do usuario
+    }
+    @Exclude // exclui o dado para salvar no firebase
+    public String getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public void setNome(String nome) {
@@ -29,6 +50,7 @@ public class Usuario {
         this.email = email;
     }
 
+    @Exclude // exclui o dado para salvar no firebase
     public String getSenha() {
         return senha;
     }

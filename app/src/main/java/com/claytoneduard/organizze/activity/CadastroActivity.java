@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.claytoneduard.organizze.R;
 import com.claytoneduard.organizze.config.ConfiguracaoFIrebase;
+import com.claytoneduard.organizze.helper.Base64Custon;
 import com.claytoneduard.organizze.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -78,7 +79,11 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                        finish();// fechar Activity cadastro
+                    // pega o email do usuario passando para base 64 e salvando como id
+                    String idUsuario = Base64Custon.codificarBase64(usuario.getEmail());
+                    usuario.setIdUsuario(idUsuario);
+                    usuario.salvar();
+                    finish();// fechar Activity cadastro
                 } else {
 
                     String excecao = "";
