@@ -7,7 +7,10 @@ package com.claytoneduard.organizze.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -33,13 +36,20 @@ public class PrincipalActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-
     }
 
-    public void adicionarReceita(View view){
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bottom_nav_menu, menu);
+        return true;
+    }
+
+    public void adicionarReceita(View view) {
         startActivity(new Intent(this, ReceitasActivity.class));
     }
-    public void adicionarDespesa(View view){
+
+    public void adicionarDespesa(View view) {
         startActivity(new Intent(this, DespesasActivity.class));
     }
 
