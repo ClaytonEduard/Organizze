@@ -13,14 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +27,6 @@ import com.claytoneduard.organizze.databinding.ActivityPrincipalBinding;
 import com.claytoneduard.organizze.helper.Base64Custon;
 import com.claytoneduard.organizze.model.Movimentacao;
 import com.claytoneduard.organizze.model.Usuario;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,9 +54,12 @@ public class PrincipalActivity extends AppCompatActivity {
     private DatabaseReference firebaseRef = ConfiguracaoFIrebase.getFirebaseDatabase();
     private DatabaseReference userRef;
     private ValueEventListener valueEventListenerUsuario;
+    private ValueEventListener valueEventListenerMovimentacoes;
     private RecyclerView recyclerView;
     private AdapterMovimentacao adapterMovimentacao;
-    private List<Movimentacao> movimentacaos = new ArrayList<>();
+    private List<Movimentacao> movimentacoes = new ArrayList<>();
+    private DatabaseReference movimentacaoRef;
+    private String mesAnoSelecionado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +77,7 @@ public class PrincipalActivity extends AppCompatActivity {
         configuraCalendarView();
 
         // configurar um adapter
-        adapterMovimentacao = new AdapterMovimentacao(movimentacaos, this);
+        adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
 
         // Configurar RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -88,11 +86,37 @@ public class PrincipalActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapterMovimentacao);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        recuperarResumo();
+    //recuperar movimentacao
+    public void recuperarMovimentacoes() {
+        //recuperar o id do user logado
+        String emailUser = autenticacao.getCurrentUser().getEmail();
+        String idUser = Base64Custon.codificarBase64(emailUser);
+        movimentacaoRef = firebaseRef.child("movimentacao")
+                                     .child(idUser)
+                                     .child(mesAnoSelecionado);
+
+        valueEventListenerMovimentacoes = movimentacaoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //limpar a lista
+                movimentacoes.clear();
+
+                for (DataSnapshot dados : snapshot.getChildren()) {
+                    Movimentacao movimentacao = dados.getValue(Movimentacao.class);
+                    movimentacoes.add(movimentacao);
+                }
+                // notifica o adapter que os dados foram mudados
+                adapterMovimentacao.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
+
 
     // metodo recuperar dados no usuario
     public void recuperarResumo() {
@@ -129,10 +153,16 @@ public class PrincipalActivity extends AppCompatActivity {
         CharSequence meses[] = {"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"};
         calendarView.setTitleMonths(meses);
 
+        CalendarDay dataAtual = calendarView.getCurrentDate();
+        String mesSelecionado = String.format("%02d", (dataAtual.getMonth() + 1));
+        mesAnoSelecionado = String.valueOf(mesSelecionado + "" + dataAtual.getYear());
         calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
             @Override
             public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-
+                String mesSelecionado = String.format("%02d", (date.getMonth() + 1));
+                mesAnoSelecionado = String.valueOf(mesSelecionado + "" + date.getYear());
+                movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
+                recuperarMovimentacoes();
             }
         });
     }
@@ -167,9 +197,17 @@ public class PrincipalActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        recuperarResumo();
+        recuperarMovimentacoes();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         Log.i("Evento", "evento foi removido!");
         userRef.removeEventListener(valueEventListenerUsuario);
+        movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
     }
 }

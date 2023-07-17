@@ -11,7 +11,7 @@ public class DateCustom {
 
     public static String dataAtual() {
         long data = System.currentTimeMillis();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d/M/yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String dataString = simpleDateFormat.format(data);
         return dataString;
     }
