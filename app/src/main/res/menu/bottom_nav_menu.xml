@@ -4,8 +4,13 @@
   ~ Clayton Eduard F Chaves
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="Sair" />
+    <item
+        android:id="@+id/menuSair"
+        android:orderInCategory="100"
+        android:title="Sair"
+        app:showAsAction="never"/>
 
 </menu>
