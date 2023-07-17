@@ -7,6 +7,7 @@ package com.claytoneduard.organizze.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,6 +51,8 @@ public class PrincipalActivity extends AppCompatActivity {
     private Double resumoUsuario = 0.0;
     private FirebaseAuth autenticacao = ConfiguracaoFIrebase.getFirebaseAutenticacao();
     private DatabaseReference firebaseRef = ConfiguracaoFIrebase.getFirebaseDatabase();
+    private DatabaseReference userRef;
+    private ValueEventListener valueEventListenerUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,20 +65,26 @@ public class PrincipalActivity extends AppCompatActivity {
 
         calendarView = findViewById(R.id.calendarView);
         configuraCalendarView();
-        recuperarResumo();
 
         textoSaudacao = findViewById(R.id.textSaldacao);
         textoSaldo = findViewById(R.id.textSaldo);
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        recuperarResumo();
+    }
+
     // metodo recuperar dados no usuario
     public void recuperarResumo() {
         String emailUser = autenticacao.getCurrentUser().getEmail();
         String idUser = Base64Custon.codificarBase64(emailUser);
-        DatabaseReference userRef = firebaseRef.child("usuarios").child(idUser);
+        userRef = firebaseRef.child("usuarios").child(idUser);
 
-        userRef.addValueEventListener(new ValueEventListener() {
+        Log.i("Evento", "evento foi adicionado!");
+        valueEventListenerUsuario = userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // recuperar dados do usuarios
@@ -88,7 +97,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 DecimalFormat decimalFormat = new DecimalFormat("0.##");
                 String resutadoFormatado = decimalFormat.format(resumoUsuario);
                 textoSaudacao.setText("Olá, " + usuario.getNome());
-                textoSaldo.setText("R$" + resutadoFormatado);
+                textoSaldo.setText("R$ " + resutadoFormatado);
 
             }
 
@@ -140,4 +149,10 @@ public class PrincipalActivity extends AppCompatActivity {
         startActivity(new Intent(this, DespesasActivity.class));
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("Evento", "evento foi removido!");
+        userRef.removeEventListener(valueEventListenerUsuario);
+    }
 }
