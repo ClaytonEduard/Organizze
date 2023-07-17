@@ -24,11 +24,19 @@ import androidx.navigation.ui.NavigationUI;
 import com.claytoneduard.organizze.R;
 import com.claytoneduard.organizze.config.ConfiguracaoFIrebase;
 import com.claytoneduard.organizze.databinding.ActivityPrincipalBinding;
+import com.claytoneduard.organizze.helper.Base64Custon;
+import com.claytoneduard.organizze.model.Usuario;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
+
+import java.text.DecimalFormat;
 
 public class PrincipalActivity extends AppCompatActivity {
 
@@ -37,8 +45,11 @@ public class PrincipalActivity extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
     private TextView textoSaudacao, textoSaldo;
-    private FirebaseAuth autenticacao;
-
+    private Double despesaTotal = 0.0;
+    private Double receitaTotal = 0.0;
+    private Double resumoUsuario = 0.0;
+    private FirebaseAuth autenticacao = ConfiguracaoFIrebase.getFirebaseAutenticacao();
+    private DatabaseReference firebaseRef = ConfiguracaoFIrebase.getFirebaseDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +62,41 @@ public class PrincipalActivity extends AppCompatActivity {
 
         calendarView = findViewById(R.id.calendarView);
         configuraCalendarView();
+        recuperarResumo();
 
         textoSaudacao = findViewById(R.id.textSaldacao);
         textoSaldo = findViewById(R.id.textSaldo);
 
+    }
+
+    // metodo recuperar dados no usuario
+    public void recuperarResumo() {
+        String emailUser = autenticacao.getCurrentUser().getEmail();
+        String idUser = Base64Custon.codificarBase64(emailUser);
+        DatabaseReference userRef = firebaseRef.child("usuarios").child(idUser);
+
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // recuperar dados do usuarios
+                Usuario usuario = snapshot.getValue(Usuario.class);
+                despesaTotal = usuario.getDespesaTotal();
+                receitaTotal = usuario.getReceitaTotal();
+                resumoUsuario = receitaTotal - despesaTotal;
+
+                // formatar os dados para exibir o saldo
+                DecimalFormat decimalFormat = new DecimalFormat("0.##");
+                String resutadoFormatado = decimalFormat.format(resumoUsuario);
+                textoSaudacao.setText("Olá, " + usuario.getNome());
+                textoSaldo.setText("R$" + resutadoFormatado);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void configuraCalendarView() {
@@ -80,7 +122,6 @@ public class PrincipalActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuSair:
-                autenticacao = ConfiguracaoFIrebase.getFirebaseAutenticacao();
                 autenticacao.signOut();
                 // desloggar o usuario e enviar para tela principal
                 startActivity(new Intent(this, MainActivity.class));

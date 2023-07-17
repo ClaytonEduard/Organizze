@@ -109,6 +109,7 @@ public class ReceitasActivity extends AppCompatActivity {
             movimentacao.salvar(data);
             Toast.makeText(this, "Receita Salva com sucesso", Toast.LENGTH_SHORT).show();
             limparCampos();
+            finish();
         }
     }
 
