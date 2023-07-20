@@ -145,7 +145,8 @@ public class PrincipalActivity extends AppCompatActivity {
                 movimentacaoRef.child(movimentacao.getKey()).removeValue();
                 // removendo do adpter
                 adapterMovimentacao.notifyItemRemoved(position);
-
+                //chama o metodo para atualizar saldo
+                atualizarSaldo();
             }
         });
 
@@ -161,6 +162,24 @@ public class PrincipalActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // atualizar saldo
+    public void atualizarSaldo(){
+
+        String emailUser = autenticacao.getCurrentUser().getEmail();
+        String idUser = Base64Custon.codificarBase64(emailUser);
+        userRef = firebaseRef.child("usuarios").child(idUser);
+
+        if(movimentacao.getTipo().equals("r")){
+            receitaTotal = receitaTotal - movimentacao.getValor();
+            userRef.child("receitaTotal").setValue(receitaTotal);
+        }
+
+        if(movimentacao.getTipo().equals("d")){
+            despesaTotal = despesaTotal - movimentacao.getValor();
+            userRef.child("despesaTotal").setValue(despesaTotal);
+        }
+
+    }
     //recuperar movimentacao
     public void recuperarMovimentacoes() {
         //recuperar o id do user logado
